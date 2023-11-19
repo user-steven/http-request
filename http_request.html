@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Test</title>
+</head>
+
+<body>
+    <form id="form_http_request">
+        <label for="method"> Method:</label>
+        <select name="method" id="select_method">
+            <option value="POST">POST</option>
+            <option value="GET">GET</option>
+        </select>
+
+        <br>
+
+        <label for="url">URL: </label>
+        <input type="text" id="input_url" name="url" size="50">
+
+        <br>
+
+        <label for="request_body">Request body: </label><br>
+        <textarea id="textarea_request_body" name="request_body" rows="10" cols="50"></textarea>
+
+        <br>
+
+        <input type="submit" value="Submit">
+    </form>
+    <div style="width: 1000px; overflow-wrap: break-word;">
+        <pre id="pre_response" style="white-space: pre-wrap;"></pre>
+    </div>
+    
+    
+
+    <script>
+        const FORM_HTTP_REQUEST = document.getElementById("form_http_request");
+        const INPUT_URL = document.getElementById("input_url");
+        const SELECT_METHOD = document.getElementById("select_method");
+        const TEXTAREA_REQUEST_BODY = document.getElementById("textarea_request_body");
+        const PRE_RESPONSE = document.getElementById("pre_response");
+
+        function submit() {
+            const url = INPUT_URL.value;
+            const method = SELECT_METHOD.value;
+            const request_body = TEXTAREA_REQUEST_BODY.value;
+
+            if (method=="GET") {
+                get_request(url, method);
+            } else if (method=="POST") {
+                post_request(url, method, request_body);
+            } else {
+                PRE_RESPONSE.textContent = "What are you doing - ?.?"
+            }
+
+        }
+
+        function post_request(url, method, request_body) {
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: request_body,
+            })
+                .then(response => response.json())
+                .then(data => PRE_RESPONSE.textContent = JSON.stringify(data, undefined, 2))
+                .catch(error => PRE_RESPONSE.textContent = error);
+        }
+
+        function get_request(url, method) {
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => response.json())
+                .then(data => PRE_RESPONSE.textContent = JSON.stringify(data, undefined, 2))
+                .catch(error => PRE_RESPONSE.textContent = error);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            FORM_HTTP_REQUEST.addEventListener('submit', function(event) {
+                event.preventDefault();
+                submit();
+            });
+        })
+    </script>
+</body>
+
+</html>
